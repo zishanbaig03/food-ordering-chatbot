@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Food Ordering</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: #fff;
+    }
+    h1 {
+      text-align: center;
+    }
+    .menu {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      font-size: 18px;
+    }
+    #chatbox {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      height: 300px;
+      border: 1px solid #ccc;
+      background: white;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #chatlog {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+    }
+    #input-area {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+    #msgInput {
+      flex: 1;
+      border: none;
+      padding: 10px;
+    }
+    #sendBtn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Food Ordering</h1>
+  <div class="menu">
+    <div class="menu-item"><span>Margherita</span><span>$10.99</span></div>
+    <div class="menu-item"><span>Pepperoni</span><span>$12.99</span></div>
+    <div class="menu-item"><span>BBQ Chicken</span><span>$13.99</span></div>
+    <div class="menu-item"><span>Veggie</span><span>$11.99</span></div>
+  </div>
+
+  <div id="chatbox">
+    <div id="chatlog">
+      <div><strong>Bot:</strong> Hello! How can I assist you today?</div>
+    </div>
+    <div id="input-area">
+      <input type="text" id="msgInput" placeholder="Type a message...">
+      <button id="sendBtn" onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const userId = Math.random().toString(36).substr(2, 9);
+
+    function appendMessage(sender, text) {
+      const chatlog = document.getElementById('chatlog');
+      const msg = document.createElement('div');
+      msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      chatlog.appendChild(msg);
+      chatlog.scrollTop = chatlog.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('msgInput');
+      const message = input.value.trim();
+      if (!message) return;
+
+      appendMessage('You', message);
+      input.value = '';
+
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, message })
+      });
+
+      const data = await res.json();
+      appendMessage('Bot', data.response);
+    }
+  </script>
+
+</body>
+</html>
